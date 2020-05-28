@@ -1,9 +1,9 @@
 
 
 import json
-from PIL import Image, ImageDraw, ImageColor
+from PIL import Image, ImageDraw, ImageFont
 import requests
-import time
+import pystray
 
 def load_api_key(json_file):
     '''
@@ -25,13 +25,14 @@ def load_api_key(json_file):
     return (secret_api_key, api_key)
 
 
-def create_image(data, icon_size, color, icon_name, icon_extension):
+def create_image(data, icon_size, color, font, font_size, icon_name, icon_extension):
     '''
     data is the bat price
     '''
     image = Image.new('RGBA', icon_size, color)
     dc = ImageDraw.Draw(image)
-    dc.text((icon_size[0]*0.10, icon_size[1]/2*0.85), data, fill=(0, 0, 0, 0))
+    center_y = icon_size[1]/2-font_size/2
+    dc.text((5, center_y), data, fill="white", font=font, align='right')
     image.save(icon_name, icon_extension)
 
 def get_price_bat(url_api, headers):
@@ -50,6 +51,8 @@ ICON_SIZE = (64, 64)
 BACKGROUND_COLOR = (255, 255, 255, 1)
 ICON_EXTENSION = "PNG"
 ICON_NAME = "bat_ico."+ICON_EXTENSION.lower()
+FONT_SIZE = 35
+FONT = ImageFont.truetype("Roboto-Regular.ttf", FONT_SIZE)
 
 KEY_FILE = "api_key.json"
 
@@ -59,7 +62,26 @@ BAT_API_URL = "/api/v3/avgPrice"
 REQUEST_HEADER = {
     "X-MBK-APIKEY": API_KEY
 }
-REQUEST_PARAMETER = "symbol=USDBAT"
+REQUEST_PARAMETER = "symbol=BATUSDT"
 
+#Get BAT price
 data = get_price_bat(BASE_HOST+BAT_API_URL+"?"+REQUEST_PARAMETER, REQUEST_HEADER)
 print(data)
+
+#Reduce the number of digit
+data = data['price'][2:5]
+print(data)
+
+#Make an image with the price
+create_image(data, ICON_SIZE, BACKGROUND_COLOR, FONT, FONT_SIZE, ICON_NAME, ICON_EXTENSION)
+
+#Create a window tray
+print("Tray icon run")
+img = Image.open('bat_ico.png', 'r')
+tray_icon = pystray.Icon('Test name')
+tray_icon.icon = img
+
+def setup(icon):
+    icon.visible = True
+
+tray_icon.run(setup)
