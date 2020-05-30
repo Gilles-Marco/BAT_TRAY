@@ -32,7 +32,7 @@ def create_image(data, icon_size, color, font, font_size, icon_name, icon_extens
     image = Image.new('RGBA', icon_size, color)
     dc = ImageDraw.Draw(image)
     center_y = icon_size[1]/2-font_size/2
-    dc.text((5, center_y), data, fill="white", font=font, align='right')
+    dc.text((1, center_y), data, fill="white", font=font, align='right')
     image.save(icon_name, icon_extension)
 
 def get_price_bat(url_api, headers):
@@ -52,7 +52,7 @@ BACKGROUND_COLOR = (255, 255, 255, 1)
 ICON_EXTENSION = "PNG"
 ICON_NAME = "bat_ico."+ICON_EXTENSION.lower()
 FONT_SIZE = 35
-FONT = ImageFont.truetype("Roboto-Regular.ttf", FONT_SIZE)
+FONT = ImageFont.truetype("Roboto-Bold.ttf", FONT_SIZE)
 
 KEY_FILE = "api_key.json"
 
